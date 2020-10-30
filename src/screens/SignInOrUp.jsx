@@ -1,6 +1,5 @@
 import React from 'react';
-// import { Form } from 'react-bootstrap';
-import { Form, FormGroup, Label, Input, FormFeedback, Spinner } from 'reactstrap';
+import { Form, FormGroup, Spinner } from 'reactstrap';
 import { Link, withRouter } from 'react-router-dom'
 import { Formik } from 'formik';
 import * as Yup from 'yup';
@@ -10,38 +9,36 @@ import firebase from '../Firebase';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 
-
-class SignUp extends React.Component {
+class SignInOrUp extends React.Component {
 
     state = {
-        loading: false, //処理中にボタンにspinner表示する制御用
+        loading: false, //spinner制御用
     }
 
     _isMounted = false;
 
-    //Submitされたら
     handleOnSubmit = (values) => {
         //spinner表示開始
-        if (this._isMounted) this.setState({ loading: true });
-        //新規登録処理
-        firebase.auth().createUserWithEmailAndPassword(values.email, values.password)
+        if (this._isMounted) this.setState({ loading: true })
+        //サインイン（ログイン）処理
+        firebase.auth().signInWithEmailAndPassword(values.email, values.password)
             .then(res => {
                 //正常終了時
-                //spinner表示終了
+                this.props.history.push("/");
                 if (this._isMounted) this.setState({ loading: false });
-                //Homeに移動
-                this.props.history.push("/"); //history.pushを使うためwithRouterしている
             })
             .catch(error => {
                 //異常終了時
                 if (this._isMounted) this.setState({ loading: false });
                 alert(error);
             });
+
     }
 
     componentDidMount = () => {
         this._isMounted = true;
     }
+    
 
     componentWillUnmount = () => {
         this._isMounted = false;
@@ -51,18 +48,17 @@ class SignUp extends React.Component {
         return (
             <div className="container">
                 <div className="mx-auto" style={{ width: 400, background: '#eee', padding: 20, marginTop: 60 }}>
-                    <p style={{ textAlign: 'center' }}>新規登録</p>
+                    <p style={{ textAlign: 'center' }}>サインイン</p>
                     <Formik
-                        initialValues={{ email: '', password: '', tel: '' }}
+                        initialValues={{ email: '', password: '' }}
                         onSubmit={(values) => this.handleOnSubmit(values)}
                         validationSchema={Yup.object().shape({
                             email: Yup.string().email().required(),
                             password: Yup.string().required(),
-                            tel: Yup.string().required(),
                         })}
                     >
                         {
-                            ({ handleSubmit, handleChange, handleBlur, values, errors, touched }) => (
+                            ({ handleSubmit, handleChange, handleBlur, values, errors, touched}) => (
                                 <Form onSubmit={handleSubmit}>
                                     <FormGroup>
                                         <TextField
@@ -70,16 +66,18 @@ class SignUp extends React.Component {
                                             type="email"
                                             name="email"
                                             id="email"
-                                            label="Email"
                                             variant="outlined"
+                                            label="Email"
                                             value={values.email}
                                             onChange={handleChange}
                                             onBlur={handleBlur}
-                                            invalid={touched.email && errors.email ? true : false}
+                                            error={touched.email && errors.email ? true : false}
+                                            helperText={touched.email && errors.email ? "正しいメールアドレスを入れてください" : false}
+                                            // invalid={touched.email && errors.email ? true : false}
                                         />
-                                        <FormFeedback>
+                                        {/* <FormFeedback>
                                             {errors.email}
-                                        </FormFeedback>
+                                        </FormFeedback> */}
                                     </FormGroup>
                                     <FormGroup>
                                         <TextField
@@ -92,33 +90,31 @@ class SignUp extends React.Component {
                                             value={values.password}
                                             onChange={handleChange}
                                             onBlur={handleBlur}
-                                            invalid={touched.password && errors.password ? true : false}
+                                            error={touched.password && errors.password ? true : false}
+                                            helperText={touched.password && errors.password ? "正しいパスワードを入れてください" : false}
+                                            // invalid={touched.password && errors.password ? true : false}
                                         />
-                                        <FormFeedback>
+                                        {/* <FormFeedback>
                                             {errors.password}
-                                        </FormFeedback>
+                                        </FormFeedback> */}
                                     </FormGroup>
-                                    <FormGroup>
-                                        <TextField
-                                            className="w-100"
-                                            type="tel"
-                                            name="tel"
-                                            id="tel"
-                                            label="tel"
-                                            variant="outlined"
-                                            value={values.tel}
-                                            onChange={handleChange}
-                                            onBlur={handleBlur}
-                                            invalid={touched.tel && errors.tel ? true : false}
-                                        />
-                                        <FormFeedback>
-                                            {errors.tel}
-                                        </FormFeedback>
-                                    </FormGroup>
-                                    <div style={{ textAlign: 'center' }}>
-                                        <Button variant="contained" color="primary" type="submit" disabled={this.state.loading}>
+                                    <div style={{ textAlign: 'left' }}>
+                                        <Button 
+                                            className="ml-3"
+                                            variant="contained" 
+                                            color="primary" 
+                                            type="submit" 
+                                            disabled={this.state.loading}
+                                        >
                                             <Spinner size="sm" color="light" style={{ marginRight: 5 }} hidden={!this.state.loading} />
-                                            新規登録
+                                            ログイン
+                                        </Button>
+                                        <Button 
+                                            className="ml-3"    
+                                            variant="contained" 
+                                            style={{ backgroundColor: '#D9C502' }} 
+                                        >
+                                            ゲストユーザーとしてログイン
                                         </Button>
                                     </div>
                                 </Form>
@@ -127,12 +123,11 @@ class SignUp extends React.Component {
                     </Formik>
                 </div>
                 <div className="mx-auto" style={{ width: 400, background: '#fff', padding: 20 }}>
-                    <Link to="/signin">ログインはこちら</Link>
+                    <Link to="/signup">新規登録はこちら</Link>
                 </div>
-
             </div>
         );
     }
 }
 
-export default withRouter(SignUp);
+export default withRouter(SignInOrUp);
