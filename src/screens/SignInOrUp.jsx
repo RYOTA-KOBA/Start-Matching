@@ -35,6 +35,29 @@ class SignInOrUp extends React.Component {
 
     }
 
+    guestLoginSubmit = () => {
+        firebase.auth().signInAnonymously().catch(function(error) {
+            // Handle Errors here.
+            var errorCode = error.code;
+            var errorMessage = error.message;
+            // ...
+        });
+        firebase.auth().onAuthStateChanged(function(user) {
+            this.props.history.push("/");
+            if (user) {
+              // User is signed in.
+              var isAnonymous = user.isAnonymous;
+              var uid = user.uid;
+              // ...
+            } 
+            // else {
+            //   // User is signed out.
+            //   // ...
+            // }
+            // // ...
+        });
+    }
+
     componentDidMount = () => {
         this._isMounted = true;
     }
@@ -98,23 +121,20 @@ class SignInOrUp extends React.Component {
                                             {errors.password}
                                         </FormFeedback> */}
                                     </FormGroup>
-                                    <div style={{ textAlign: 'left' }}>
+                                    <div style={{ textAlign: 'center' }}>
                                         <Button 
-                                            className="ml-3"
                                             variant="contained" 
                                             color="primary" 
                                             type="submit" 
                                             disabled={this.state.loading}
                                         >
-                                            <Spinner size="sm" color="light" style={{ marginRight: 5 }} hidden={!this.state.loading} />
+                                            <Spinner 
+                                                size="sm" 
+                                                color="light" 
+                                                style={{ marginRight: 5 }} 
+                                                hidden={!this.state.loading} 
+                                            />
                                             ログイン
-                                        </Button>
-                                        <Button 
-                                            className="ml-3"    
-                                            variant="contained" 
-                                            style={{ backgroundColor: '#D9C502' }} 
-                                        >
-                                            ゲストユーザーとしてログイン
                                         </Button>
                                     </div>
                                 </Form>
@@ -124,6 +144,20 @@ class SignInOrUp extends React.Component {
                 </div>
                 <div className="mx-auto" style={{ width: 400, background: '#fff', padding: 20 }}>
                     <Link to="/signup">新規登録はこちら</Link>
+                    <Button 
+                        className="mt-3"    
+                        variant="contained" 
+                        style={{ backgroundColor: '#D9C502' }} 
+                        onClick={() => this.guestLoginSubmit()}
+                    >
+                        <Spinner 
+                            size="sm" 
+                            color="light" 
+                            style={{ marginRight: 5 }} 
+                            hidden={!this.state.loading} 
+                        />
+                        ゲストユーザーとしてログイン
+                    </Button>
                 </div>
             </div>
         );
