@@ -64,13 +64,7 @@ class SignInOrUp extends React.Component {
                 // User is signed in.
                 var isAnonymous = user.isAnonymous;
                 var uid = user.uid;
-              // ...
             } 
-            // else {
-            //   // User is signed out.
-            //   // ...
-            // }
-            // // ...
         });
     }
 
