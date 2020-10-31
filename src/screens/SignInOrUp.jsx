@@ -29,14 +29,6 @@ class SignInOrUp extends React.Component {
         this._isGuestMounted = false;
     }
 
-    componentDidMount = () => {
-        this._isMounted = true;
-    }
-    
-
-    componentWillUnmount = () => {
-        this._isMounted = false;
-    }
 
     handleOnSubmit = (values) => {
         //spinner表示開始
