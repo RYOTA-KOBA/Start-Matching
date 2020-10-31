@@ -17,6 +17,15 @@ class SignInOrUp extends React.Component {
 
     _isMounted = false;
 
+    componentDidMount = () => {
+        this._isMounted = true;
+    }
+    
+
+    componentWillUnmount = () => {
+        this._isMounted = false;
+    }
+
     handleOnSubmit = (values) => {
         //spinner表示開始
         if (this._isMounted) this.setState({ loading: true })
@@ -42,13 +51,13 @@ class SignInOrUp extends React.Component {
             var errorMessage = error.message;
             // ...
         });
-        firebase.auth().onAuthStateChanged(function(user) {
-            this.props.history.push("/");
+        firebase.auth().onAuthStateChanged((user) => {
             if (user) {
-              // User is signed in.
-              var isAnonymous = user.isAnonymous;
-              var uid = user.uid;
-              // ...
+                this.props.history.push("/");
+                // User is signed in.
+                var isAnonymous = user.isAnonymous;
+                var uid = user.uid;
+                // ...
             } 
             // else {
             //   // User is signed out.
@@ -56,15 +65,6 @@ class SignInOrUp extends React.Component {
             // }
             // // ...
         });
-    }
-
-    componentDidMount = () => {
-        this._isMounted = true;
-    }
-    
-
-    componentWillUnmount = () => {
-        this._isMounted = false;
     }
 
     render() {
