@@ -160,7 +160,7 @@ class SignInOrUp extends React.Component {
                             size="sm" 
                             color="light" 
                             style={{ marginRight: 5 }} 
-                            hidden={!this.state.guestLoading} 
+                            hidden={!this.state.loading} 
                         />
                         ゲストユーザーとしてログイン
                     </Button>
