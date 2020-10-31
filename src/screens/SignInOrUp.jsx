@@ -16,6 +16,18 @@ class SignInOrUp extends React.Component {
     }
 
     _isMounted = false;
+    _isGuestMounted = false;
+
+    componentDidMount = () => {
+        this._isMounted = true;
+        this._isGuestMounted = true;
+    }
+    
+
+    componentWillUnmount = () => {
+        this._isMounted = false;
+        this._isGuestMounted = false;
+    }
 
     handleOnSubmit = (values) => {
         //spinner表示開始
@@ -40,14 +52,17 @@ class SignInOrUp extends React.Component {
             // Handle Errors here.
             var errorCode = error.code;
             var errorMessage = error.message;
+            alert(error)
             // ...
         });
-        firebase.auth().onAuthStateChanged(function(user) {
-            this.props.history.push("/");
+        if(this._isGuestMounted) this.setState({ guestLoading: true })
+        firebase.auth().onAuthStateChanged((user) => {
             if (user) {
-              // User is signed in.
-              var isAnonymous = user.isAnonymous;
-              var uid = user.uid;
+                this.props.history.push("/");
+                if(this._isGuestMounted) this.setState({ guestLoading: false })
+                // User is signed in.
+                var isAnonymous = user.isAnonymous;
+                var uid = user.uid;
               // ...
             } 
             // else {
@@ -56,15 +71,6 @@ class SignInOrUp extends React.Component {
             // }
             // // ...
         });
-    }
-
-    componentDidMount = () => {
-        this._isMounted = true;
-    }
-    
-
-    componentWillUnmount = () => {
-        this._isMounted = false;
     }
 
     render() {
@@ -154,7 +160,7 @@ class SignInOrUp extends React.Component {
                             size="sm" 
                             color="light" 
                             style={{ marginRight: 5 }} 
-                            hidden={!this.state.loading} 
+                            hidden={!this.state.guestLoading} 
                         />
                         ゲストユーザーとしてログイン
                     </Button>
